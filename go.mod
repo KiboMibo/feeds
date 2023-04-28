@@ -1,4 +1,4 @@
-module github.com/gorilla/feeds
+module feeds
 
 go 1.20
 
