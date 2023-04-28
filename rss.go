@@ -29,7 +29,7 @@ type RssTitle interface {
 
 type RssTitleString struct {
 	XMLName xml.Name `xml:"title"`
-	Title   string   `xml:""`
+	Title   string   `xml:",cdata"`
 }
 
 func (rst RssTitleString) SetTitle(title string) RssTitle {
@@ -37,8 +37,8 @@ func (rst RssTitleString) SetTitle(title string) RssTitle {
 }
 
 type RssTitleStringEncoded struct {
-	XMLName xml.Name `xml:"title"`
-	Title   string   `xml:",encoded"`
+	XMLName xml.Name `xml:"title:encoded"`
+	Title   string   `xml:",cdata"`
 }
 
 func (rst RssTitleStringEncoded) SetTitle(title string) RssTitle {
@@ -51,10 +51,10 @@ type RssDescription interface {
 
 type RssDescriptionString struct {
 	XMLName     xml.Name `xml:"description"`
-	Description string   `xml:""`
+	Description string   `xml:"description"`
 }
 
-func (rsd RssDescriptionString) SetDesc(desk string) RssDescription {
+func (rsd *RssDescriptionString) SetDesc(desk string) RssDescription {
 	return &RssDescriptionString{Description: desk}
 }
 
@@ -64,7 +64,7 @@ type RssDescriptionStringEncoded struct {
 }
 
 func (rsd RssDescriptionStringEncoded) SetDesc(desk string) RssDescription {
-	return RssDescriptionStringEncoded{Description: desk}
+	return &RssDescriptionStringEncoded{Description: desk}
 }
 
 type RssImage struct {
@@ -138,8 +138,8 @@ type Rss struct {
 // create a new RssItem with a generic Item struct's data
 func newRssItem(i *Item) *RssItem {
 	item := &RssItem{
-		Title:       RssTitleStringEncoded{Title: i.Title},
-		Description: RssDescriptionStringEncoded{Description: i.Description},
+		Title:       &RssTitleString{Title: i.Title},
+		Description: &RssDescriptionStringEncoded{Description: i.Description},
 		Guid:        i.Id,
 		PubDate:     anyTimeFormat(time.RFC1123Z, i.Created, i.Updated),
 	}
