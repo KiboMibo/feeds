@@ -23,6 +23,50 @@ type RssContent struct {
 	Content string   `xml:",cdata"`
 }
 
+type RssTitle interface {
+	SetTitle(string) RssTitle
+}
+
+type RssTitleString struct {
+	XMLName xml.Name `xml:"title"`
+	Title   string   `xml:""`
+}
+
+func (rst RssTitleString) SetTitle(title string) RssTitle {
+	return RssTitleString{Title: title}
+}
+
+type RssTitleStringEncoded struct {
+	XMLName xml.Name `xml:"title"`
+	Title   string   `xml:",encoded"`
+}
+
+func (rst RssTitleStringEncoded) SetTitle(title string) RssTitle {
+	return RssTitleStringEncoded{Title: title}
+}
+
+type RssDescription interface {
+	SetDesc(string) RssDescription
+}
+
+type RssDescriptionString struct {
+	XMLName     xml.Name `xml:"description"`
+	Description string   `xml:""`
+}
+
+func (rsd RssDescriptionString) SetDesc(desk string) RssDescription {
+	return &RssDescriptionString{Description: desk}
+}
+
+type RssDescriptionStringEncoded struct {
+	XMLName     xml.Name `xml:"description:encoded"`
+	Description string   `xml:",cdata"`
+}
+
+func (rsd RssDescriptionStringEncoded) SetDesc(desk string) RssDescription {
+	return RssDescriptionStringEncoded{Description: desk}
+}
+
 type RssImage struct {
 	XMLName xml.Name `xml:"image"`
 	Url     string   `xml:"url"`
@@ -65,10 +109,10 @@ type RssFeed struct {
 }
 
 type RssItem struct {
-	XMLName     xml.Name `xml:"item"`
-	Title       string   `xml:"title"`       // required
-	Link        string   `xml:"link"`        // required
-	Description string   `xml:"description"` // required
+	XMLName     xml.Name       `xml:"item"`
+	Title       RssTitle       // required
+	Link        string         `xml:"link"` // required
+	Description RssDescription // required
 	Content     *RssContent
 	Author      string `xml:"author,omitempty"`
 	Category    string `xml:"category,omitempty"`
@@ -94,8 +138,8 @@ type Rss struct {
 // create a new RssItem with a generic Item struct's data
 func newRssItem(i *Item) *RssItem {
 	item := &RssItem{
-		Title:       i.Title,
-		Description: i.Description,
+		Title:       RssTitleStringEncoded{Title: i.Title},
+		Description: RssDescriptionStringEncoded{Description: i.Description},
 		Guid:        i.Id,
 		PubDate:     anyTimeFormat(time.RFC1123Z, i.Created, i.Updated),
 	}
