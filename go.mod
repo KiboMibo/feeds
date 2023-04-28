@@ -1,4 +1,4 @@
-module feeds
+module github.com/KiboMibo/feeds
 
 go 1.20
 
