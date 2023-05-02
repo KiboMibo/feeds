@@ -21,21 +21,23 @@ type Image struct {
 	Width, Height    int
 }
 
-type Enclosure struct {
+type MediaContent struct {
 	Url, Length, Type string
 }
 
 type Item struct {
-	Title       string
-	Link        *Link
-	Source      *Link
-	Author      *Author
-	Description string // used as description in rss, summary in atom
-	Id          string // used as guid in rss, id in atom
-	Updated     time.Time
-	Created     time.Time
-	Enclosure   *Enclosure
-	Content     string
+	Title         string
+	Link          *Link
+	Source        *Link
+	Author        *Author
+	Description   string // used as description in rss, summary in atom
+	Id            string // used as guid in rss, id in atom
+	Updated       time.Time
+	Created       time.Time
+	MediaContent  *MediaContent
+	MediaTitle    string
+	MediaKeywords string
+	Content       string
 }
 
 type Feed struct {
