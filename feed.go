@@ -38,6 +38,7 @@ type Item struct {
 	MediaTitle    string
 	MediaKeywords string
 	Content       string
+	Category      string
 }
 
 type Feed struct {

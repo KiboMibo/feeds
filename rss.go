@@ -8,6 +8,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -94,8 +95,9 @@ type Id struct {
 type RssMediaContent struct {
 	XMLName xml.Name `xml:"media:content"`
 	Url     string   `xml:"url,attr"`
-	Length  string   `xml:"length,attr"`
+	Length  string   `xml:"length,attr,omitempty"`
 	Type    string   `xml:"type,attr"`
+	Medium  string   `xml:"medium,attr"`
 }
 
 type RssMediaTitle struct {
@@ -154,6 +156,7 @@ func newRssItem(i *Item) *RssItem {
 		Title:       &RssTitleString{Title: i.Title},
 		Description: &RssDescriptionStringEncoded{Description: i.Description},
 		PubDate:     anyTimeFormat(time.RFC1123Z, i.Created, i.Updated),
+		Category:    i.Category,
 	}
 	if i.Id != "" {
 		if _, err := url.Parse(i.Id); err != nil {
@@ -174,7 +177,7 @@ func newRssItem(i *Item) *RssItem {
 
 	// Define a closure
 	if i.MediaContent != nil && i.MediaContent.Type != "" && i.MediaContent.Length != "" {
-		item.MediaContent = &RssMediaContent{Url: i.MediaContent.Url, Type: i.MediaContent.Type, Length: i.MediaContent.Length}
+		item.MediaContent = &RssMediaContent{Url: i.MediaContent.Url, Type: i.MediaContent.Type, Medium: strings.Split(i.MediaContent.Type, "/")[0]}
 		if i.MediaTitle != "" {
 			item.MediaTitle = &RssMediaTitle{Title: i.MediaTitle, Type: "plain"}
 		}
