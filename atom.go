@@ -132,8 +132,8 @@ func newAtomEntry(i *Item) *AtomEntry {
 		x.Content = &AtomContent{Content: i.Content, Type: "html"}
 	}
 
-	if i.Enclosure != nil && link_rel != "enclosure" {
-		x.Links = append(x.Links, AtomLink{Href: i.Enclosure.Url, Rel: "enclosure", Type: i.Enclosure.Type, Length: i.Enclosure.Length})
+	if i.MediaContent != nil && link_rel != "enclosure" {
+		x.Links = append(x.Links, AtomLink{Href: i.MediaContent.Url, Rel: "enclosure", Type: i.MediaContent.Type, Length: i.MediaContent.Length})
 	}
 
 	if len(name) > 0 || len(email) > 0 {

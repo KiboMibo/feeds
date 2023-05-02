@@ -7,6 +7,7 @@ package feeds
 import (
 	"encoding/xml"
 	"fmt"
+	"net/url"
 	"time"
 )
 
@@ -84,6 +85,24 @@ type RssTextInput struct {
 	Link        string   `xml:"link"`
 }
 
+type Id struct {
+	XMLName     xml.Name `xml:"guid,omitempty"`
+	IsPermaLink bool     `xml:"isPermaLink,attr,omitempty"`
+	Guid        string   `xml:",chardata"`
+}
+
+type RssMediaContent struct {
+	XMLName xml.Name `xml:"media:content"`
+	Url     string   `xml:"url,attr"`
+	Length  string   `xml:"length,attr"`
+	Type    string   `xml:"type,attr"`
+}
+
+type RssMediaTitle struct {
+	XMLName xml.Name `xml:"media:title,omitempty"`
+	Type    string   `xml:"type,attr,omitempty"`
+	Title   string   `xml:",chardata"`
+}
 type RssFeed struct {
 	XMLName        xml.Name `xml:"channel"`
 	Title          string   `xml:"title"`       // required
@@ -109,26 +128,20 @@ type RssFeed struct {
 }
 
 type RssItem struct {
-	XMLName     xml.Name       `xml:"item"`
-	Title       RssTitle       // required
-	Link        string         `xml:"link"` // required
-	Description RssDescription // required
-	Content     *RssContent
-	Author      string `xml:"author,omitempty"`
-	Category    string `xml:"category,omitempty"`
-	Comments    string `xml:"comments,omitempty"`
-	Enclosure   *RssEnclosure
-	Guid        *RssGuid // Id used
-	PubDate     string   `xml:"pubDate,omitempty"` // created or updated
-	Source      string   `xml:"source,omitempty"`
-}
-
-type RssEnclosure struct {
-	//RSS 2.0 <enclosure url="http://example.com/file.mp3" length="123456789" type="audio/mpeg" />
-	XMLName xml.Name `xml:"enclosure"`
-	Url     string   `xml:"url,attr"`
-	Length  string   `xml:"length,attr"`
-	Type    string   `xml:"type,attr"`
+	XMLName       xml.Name       `xml:"item"`
+	Title         RssTitle       // required
+	Link          string         `xml:"link"` // required
+	Description   RssDescription // required
+	Content       *RssContent
+	Author        string `xml:"author,omitempty"`
+	Category      string `xml:"category,omitempty"`
+	Comments      string `xml:"comments,omitempty"`
+	MediaContent  *RssMediaContent
+	MediaKeywords string `xml:"media:keywords,omitempty"`
+	MediaTitle    *RssMediaTitle
+	Guid          *Id
+	PubDate       string `xml:"pubDate,omitempty"` // created or updated
+	Source        string `xml:"source,omitempty"`
 }
 
 type RssGuid struct {
@@ -163,8 +176,14 @@ func newRssItem(i *Item) *RssItem {
 	}
 
 	// Define a closure
-	if i.Enclosure != nil && i.Enclosure.Type != "" && i.Enclosure.Length != "" {
-		item.Enclosure = &RssEnclosure{Url: i.Enclosure.Url, Type: i.Enclosure.Type, Length: i.Enclosure.Length}
+	if i.MediaContent != nil && i.MediaContent.Type != "" && i.MediaContent.Length != "" {
+		item.MediaContent = &RssMediaContent{Url: i.MediaContent.Url, Type: i.MediaContent.Type, Length: i.MediaContent.Length}
+		if i.MediaTitle != "" {
+			item.MediaTitle = &RssMediaTitle{Title: i.MediaTitle, Type: "plain"}
+		}
+		if i.MediaKeywords != "" {
+			item.MediaKeywords = i.MediaKeywords
+		}
 	}
 
 	if i.Author != nil {
