@@ -146,6 +146,13 @@ type RssItem struct {
 	Source        string `xml:"source,omitempty"`
 }
 
+type RssGuid struct {
+	//RSS 2.0 <guid isPermaLink="true">http://inessential.com/2002/09/01.php#a2</guid>
+	XMLName     xml.Name `xml:"guid"`
+	Id          string   `xml:",chardata"`
+	IsPermaLink string   `xml:"isPermaLink,attr,omitempty"` // "true", "false", or an empty string
+}
+
 type Rss struct {
 	*Feed
 }
@@ -153,17 +160,13 @@ type Rss struct {
 // create a new RssItem with a generic Item struct's data
 func newRssItem(i *Item) *RssItem {
 	item := &RssItem{
-		Title:       &RssTitleString{Title: i.Title},
-		Description: &RssDescriptionStringEncoded{Description: i.Description},
+		Title:       i.Title,
+		Description: i.Description,
 		PubDate:     anyTimeFormat(time.RFC1123Z, i.Created, i.Updated),
 		Category:    i.Category,
 	}
 	if i.Id != "" {
-		if _, err := url.Parse(i.Id); err != nil {
-			item.Guid = &Id{Guid: i.Id}
-		} else {
-			item.Guid = &Id{IsPermaLink: true, Guid: i.Id}
-		}
+		item.Guid = &RssGuid{Id: i.Id, IsPermaLink: i.IsPermaLink}
 	}
 	if i.Link != nil {
 		item.Link = i.Link.Href
@@ -209,9 +212,13 @@ func (r *Rss) RssFeed() *RssFeed {
 		image = &RssImage{Url: r.Image.Url, Title: r.Image.Title, Link: r.Image.Link, Width: r.Image.Width, Height: r.Image.Height}
 	}
 
+	var href string
+	if r.Link != nil {
+		href = r.Link.Href
+	}
 	channel := &RssFeed{
 		Title:          r.Title,
-		Link:           r.Link.Href,
+		Link:           href,
 		Description:    r.Description,
 		ManagingEditor: author,
 		PubDate:        pub,

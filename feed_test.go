@@ -59,6 +59,13 @@ var atomOutput = `<?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.
     <link href="http://example.com/strings" rel="alternate"></link>
     <summary type="html">How to use things like %s, %v, %d, etc.</summary>
   </entry>
+  <entry>
+    <title>Go Proverb #1</title>
+    <updated>2013-01-16T21:52:35-05:00</updated>
+    <id>tag:go-proverbs.github.io,2013-01-16:/</id>
+    <content type="html">Don&#39;t communicate by sharing memory, share memory by communicating.</content>
+    <link href="https://go-proverbs.github.io/" rel="alternate"></link>
+  </entry>
 </feed>`
 
 var rssOutput = `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
@@ -103,17 +110,29 @@ var rssOutput = `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:
       <description>How to use things like %s, %v, %d, etc.</description>
       <pubDate>Wed, 16 Jan 2013 21:52:35 -0500</pubDate>
     </item>
+    <item>
+      <title>Go Proverb #1</title>
+      <link>https://go-proverbs.github.io/</link>
+      <description></description>
+      <content:encoded><![CDATA[Don't communicate by sharing memory, share memory by communicating.]]></content:encoded>
+      <pubDate>Wed, 16 Jan 2013 21:52:35 -0500</pubDate>
+    </item>
   </channel>
 </rss>`
 
 var jsonOutput = `{
-  "version": "https://jsonfeed.org/version/1",
+  "version": "https://jsonfeed.org/version/1.1",
   "title": "jmoiron.net blog",
   "home_page_url": "http://jmoiron.net/blog",
   "description": "discussion about tech, footie, photos",
   "author": {
     "name": "Jason Moiron"
   },
+  "authors": [
+    {
+      "name": "Jason Moiron"
+    }
+  ],
   "items": [
     {
       "id": "",
@@ -124,7 +143,12 @@ var jsonOutput = `{
       "date_published": "2013-01-16T21:52:35-05:00",
       "author": {
         "name": "Jason Moiron"
-      }
+      },
+      "authors": [
+        {
+          "name": "Jason Moiron"
+        }
+      ]
     },
     {
       "id": "",
@@ -153,6 +177,13 @@ var jsonOutput = `{
       "url": "http://example.com/strings",
       "title": "String formatting in Go",
       "summary": "How to use things like %s, %v, %d, etc.",
+      "date_published": "2013-01-16T21:52:35-05:00"
+    },
+    {
+      "id": "",
+      "url": "https://go-proverbs.github.io/",
+      "title": "Go Proverb #1",
+      "content_html": "Don't communicate by sharing memory, share memory by communicating.",
       "date_published": "2013-01-16T21:52:35-05:00"
     }
   ]
@@ -218,6 +249,12 @@ func TestFeed(t *testing.T) {
 			Link:        &Link{Href: "http://example.com/strings"},
 			Description: "How to use things like %s, %v, %d, etc.",
 			Created:     now,
+		},
+		{
+			Title:   "Go Proverb #1",
+			Link:    &Link{Href: "https://go-proverbs.github.io/"},
+			Content: "Don't communicate by sharing memory, share memory by communicating.",
+			Created: now,
 		}}
 
 	// atom, err := feed.ToAtom()
@@ -283,35 +320,30 @@ var atomOutputSorted = `<?xml version="1.0" encoding="UTF-8"?><feed xmlns="http:
     <updated>2013-01-18T21:52:35-05:00</updated>
     <id>tag:jmoiron.net,2013-01-18:/blog/limiting-concurrency-in-go/</id>
     <link href="http://jmoiron.net/blog/limiting-concurrency-in-go/" rel="alternate"></link>
-    <summary type="html"></summary>
   </entry>
   <entry>
     <title>Logic-less Template Redux</title>
     <updated>2013-01-17T21:52:35-05:00</updated>
     <id>tag:jmoiron.net,2013-01-17:/blog/logicless-template-redux/</id>
     <link href="http://jmoiron.net/blog/logicless-template-redux/" rel="alternate"></link>
-    <summary type="html"></summary>
   </entry>
   <entry>
     <title>Idiomatic Code Reuse in Go</title>
     <updated>2013-01-17T09:52:35-05:00</updated>
     <id>tag:jmoiron.net,2013-01-17:/blog/idiomatic-code-reuse-in-go/</id>
     <link href="http://jmoiron.net/blog/idiomatic-code-reuse-in-go/" rel="alternate"></link>
-    <summary type="html"></summary>
   </entry>
   <entry>
     <title>Never Gonna Give You Up Mp3</title>
     <updated>2013-01-17T07:52:35-05:00</updated>
     <id>tag:example.com,2013-01-17:/RickRoll.mp3</id>
     <link href="http://example.com/RickRoll.mp3" rel="alternate"></link>
-    <summary type="html"></summary>
   </entry>
   <entry>
     <title>String formatting in Go</title>
     <updated>2013-01-16T21:52:35-05:00</updated>
     <id>tag:example.com,2013-01-16:/strings</id>
     <link href="http://example.com/strings" rel="alternate"></link>
-    <summary type="html"></summary>
   </entry>
 </feed>`
 
@@ -357,13 +389,18 @@ var rssOutputSorted = `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" 
 </rss>`
 
 var jsonOutputSorted = `{
-  "version": "https://jsonfeed.org/version/1",
+  "version": "https://jsonfeed.org/version/1.1",
   "title": "jmoiron.net blog",
   "home_page_url": "http://jmoiron.net/blog",
   "description": "discussion about tech, footie, photos",
   "author": {
     "name": "Jason Moiron"
   },
+  "authors": [
+    {
+      "name": "Jason Moiron"
+    }
+  ],
   "items": [
     {
       "id": "",
@@ -492,6 +529,58 @@ func TestFeedSorted(t *testing.T) {
 	}
 }
 
+func TestFeedNil(t *testing.T) {
+	now, err := time.Parse(time.RFC3339, "2013-01-16T21:52:35-05:00")
+	if err != nil {
+		t.Error(err)
+	}
+	tz := time.FixedZone("EST", -5*60*60)
+	now = now.In(tz)
+
+	feed := &Feed{
+		Title:       "jmoiron.net blog",
+		Link:        nil,
+		Description: "discussion about tech, footie, photos",
+		Author:      nil,
+		Created:     now,
+		Copyright:   "This work is copyright © Benjamin Button",
+	}
+
+	feed.Items = []*Item{
+		{
+			Title:       "Limiting Concurrency in Go",
+			Link:        nil,
+			Description: "A discussion on controlled parallelism in golang",
+			Author:      nil,
+			Created:     now,
+			Content:     `<p>Go's goroutines make it easy to make <a href="http://collectiveidea.com/blog/archives/2012/12/03/playing-with-go-embarrassingly-parallel-scripts/">embarrassingly parallel programs</a>, but in many &quot;real world&quot; cases resources can be limited and attempting to do everything at once can exhaust your access to them.</p>`,
+		}}
+
+	if _, err := feed.ToAtom(); err != nil {
+		t.Errorf("unexpected error encoding Atom: %v", err)
+	}
+	var buf bytes.Buffer
+	if err := feed.WriteAtom(&buf); err != nil {
+		t.Errorf("unexpected error writing Atom: %v", err)
+	}
+
+	if _, err := feed.ToRss(); err != nil {
+		t.Errorf("unexpected error encoding RSS: %v", err)
+	}
+	buf.Reset()
+	if err := feed.WriteRss(&buf); err != nil {
+		t.Errorf("unexpected error writing RSS: %v", err)
+	}
+
+	if _, err := feed.ToJSON(); err != nil {
+		t.Errorf("unexpected error encoding JSON: %v", err)
+	}
+	buf.Reset()
+	if err := feed.WriteJSON(&buf); err != nil {
+		t.Errorf("unexpected error writing JSON: %v", err)
+	}
+}
+
 var jsonOutputHub = `{
   "version": "https://jsonfeed.org/version/1",
   "title": "feed title",
@@ -508,7 +597,7 @@ func TestJSONHub(t *testing.T) {
 		Version: "https://jsonfeed.org/version/1",
 		Title:   "feed title",
 		Hubs: []*JSONHub{
-			&JSONHub{
+			{
 				Type: "WebSub",
 				Url:  "https://websub-hub.example",
 			},
