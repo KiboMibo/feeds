@@ -7,7 +7,6 @@ package feeds
 import (
 	"encoding/xml"
 	"fmt"
-	"net/url"
 	"strings"
 	"time"
 )
@@ -160,14 +159,15 @@ type Rss struct {
 // create a new RssItem with a generic Item struct's data
 func newRssItem(i *Item) *RssItem {
 	item := &RssItem{
-		Title:       i.Title,
-		Description: i.Description,
-		PubDate:     anyTimeFormat(time.RFC1123Z, i.Created, i.Updated),
-		Category:    i.Category,
+		PubDate:  anyTimeFormat(time.RFC1123Z, i.Created, i.Updated),
+		Category: i.Category,
 	}
 	if i.Id != "" {
-		item.Guid = &RssGuid{Id: i.Id, IsPermaLink: i.IsPermaLink}
+		item.Guid = &Id{Guid: i.Id, IsPermaLink: true}
 	}
+
+	item.Title.SetTitle(i.Title)
+	item.Description.SetDesc(i.Description)
 	if i.Link != nil {
 		item.Link = i.Link.Href
 	}
